@@ -73,7 +73,7 @@ def get_string(Msg, msga):
 
 def get_login(url):
     print("username: " + username)
-    print("password: xxxxx" + password)
+    print("password: xxxxx")
     payload = {'DDDDD': username, 'upass': password, 'savePWD': 0, '0MKKey': ''}
     r = s.post(url, data = payload)
     Msg = re.findall(r'Msg=(\d{2})', r.text)
