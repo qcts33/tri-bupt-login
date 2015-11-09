@@ -1,4 +1,4 @@
-# BUPT_login
+# tri-bupt-login
 A python script for BUPT login
 
 ---
