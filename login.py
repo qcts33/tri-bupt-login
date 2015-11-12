@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import requests
-import sys
-import re
-import locale
-import getpass
+import requests, os, sys, re, locale, getpass, json
 
 s = requests.Session()
 username = ''
@@ -95,41 +91,84 @@ def get_server():
     print("Authentication server url: " + authentication_server)
     return authentication_server
 
+
 def validate_parameter():
-    if (len(sys.argv) != 3 and len(sys.argv) != 2):
-        parameter_error()
+    if (len(sys.argv) > 3):
         return False
-    if (sys.argv[1] != 'in' and sys.argv[1] != 'out'):
-        parameter_error()
-        return False
-    if (sys.argv[1] == 'in' and len(sys.argv) != 3):
-        parameter_error()
-        return False
-    if (sys.argv[1] == 'out' and len(sys.argv) != 2):
+    if (len(sys.argv) == 2 and not (sys.argv[1] == 'in' or sys.argv[1] == 'out')):
         parameter_error()
         return False
 
     return True
 
+
 def parameter_error():
-    print('Usage:')
-    print(sys.argv[0] + ' [in|out] [username]')
+    print('Usage:' + sys.argv[0] + ' [in|out] ' + '[Profile]')
+
+
+def login_without_config_file():
+    username = input("Username: ")
+    password = getpass.getpass('Password: ')
+
+
+def login_with_config_file(config_file):
+    with open(config_file) as tmp_file:
+        tmp = json.load(tmp_file)["Applications"]
+        if "tri-bupt-login" in tmp:
+            profile_list = tmp["tri-bupt-login"];
+
+            if len(sys.argv) == 3:
+                if sys.argv[2] in profile_list:
+                    profile = profile_list[sys.argv[2]]
+                else:
+                    print ("Can't fine the '" + sys.argv[2] + "' profile")
+                    return ()
+            if (len(sys.argv) < 3):
+                profile = profile_list["default"]
+        else:
+            print ('Can not find "tri-bupt-login" field in your'
+                    'configuration file!')
+            return ()
+
+        print (profile)
+        return (profile['username'], profile['password'])
+
+
+def get_pass():
+    config_file_path = ['~/.tri_bupt_login.json',
+                         '~/.dot/tri_config.json']
+
+    for cur_config_file in config_file_path:
+        config_file_full_path = os.path.expanduser(cur_config_file)
+        if (os.path.exists(config_file_full_path) is True):
+            config_file = config_file_full_path
+            t = login_with_config_file(config_file)
+            if (len(t) != 0):
+                return t;
+            else:
+                return login_without_config_file();
+            break;
+    else:
+        return login_without_config_file();
+
+
 
 if __name__ == '__main__':
-    print('Start login...')
     if (not validate_parameter()):
         sys.exit(-1)
 
-    if (sys.argv[1] == 'in'):
-        username = sys.argv[2]
-        password = getpass.getpass('Password: ')
+    if (len(sys.argv) == 1 or sys.argv[1] == 'in'):
+        print('Start login...')
+        u_and_pass = get_pass()
+        username = u_and_pass[0]
+        password = u_and_pass[1]
 
         server_url = get_server()
         if (server_url == ''):
             sys.exit(0)
 
         if (get_login(server_url)):
-           print('Login successfully')
+           print('Process finished')
 
     else:
         r = s.get('http://gw.bupt.edu.cn/F.htm')
