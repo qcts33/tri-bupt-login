@@ -109,6 +109,7 @@ def parameter_error():
 def login_without_config_file():
     username = input("Username: ")
     password = getpass.getpass('Password: ')
+    return (username, password)
 
 
 def login_with_config_file(config_file):
@@ -136,7 +137,8 @@ def login_with_config_file(config_file):
 
 def get_pass():
     config_file_path = ['~/.tri_bupt_login.json',
-                         '~/.dot/tri_config.json']
+                        '~/.dot/tri_config.json',
+                        'tri_bupt_login.json']
 
     for cur_config_file in config_file_path:
         config_file_full_path = os.path.expanduser(cur_config_file)
