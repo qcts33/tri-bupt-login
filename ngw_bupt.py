@@ -1,10 +1,12 @@
-import requests
 import json
-from bs4 import BeautifulSoup
+
 import PySimpleGUI as sg
+import requests
+from bs4 import BeautifulSoup
+import click
 
 
-def login(auth):
+def _login(auth):
     login_url = "http://ngw.bupt.edu.cn/login"
     res = requests.post(login_url, auth)
     soup = BeautifulSoup(res.text, "lxml")
@@ -15,9 +17,53 @@ def login(auth):
     return result.strip()
 
 
-def gui():
+@click.group()
+def main():
+    pass
+
+
+def load_data():
     with open("bupt_login.json", "r") as fp:
         data = json.load(fp)
+    return data
+
+
+@main.command()
+def logout():
+    requests.get("http://ngw.bupt.edu.cn/logout")
+    click.echo("logout")
+
+
+@main.group()
+def login():
+    pass
+
+
+@login.command()
+def default():
+    data = load_data()
+    name, auth = next(iter(data.items()))
+    click.echo(f"Auth with {name}")
+    result = _login(auth)
+    click.echo(result)
+
+
+@login.command()
+@click.option("--name", prompt="Your login ID")
+@click.option("--password", prompt=True, hide_input=True)
+@click.option("--line", prompt=True, default="")
+def custom(name, password, line):
+    auth = {"user": name.strip(), "pass": password.strip()}
+    if len(line) > 0:
+        auth["line"] = line.strip()
+    click.echo(f"login with {name}")
+    result = _login(auth)
+    click.echo(result)
+
+
+@main.command()
+def gui():
+    data = load_data()
     layout = [
         [sg.Text("Please Select the auth info")],
         [sg.InputCombo(tuple(data.keys()), size=(20, 1))],
@@ -32,7 +78,7 @@ def gui():
         if event == "Login":
             name = values[0]
             auth = data[name]
-            result = login(auth)
+            result = _login(auth)
             window.Element("_Output_").Update(result)
         if event == "Logout":
             requests.get("http://ngw.bupt.edu.cn/logout")
@@ -40,4 +86,4 @@ def gui():
 
 
 if __name__ == "__main__":
-    gui()
+    main()
