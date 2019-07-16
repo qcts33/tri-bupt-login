@@ -34,29 +34,11 @@ def logout():
     click.echo("logout")
 
 
-@main.group()
+@main.command()
 def login():
-    pass
-
-
-@login.command()
-def default():
     data = load_data()
     name, auth = next(iter(data.items()))
     click.echo(f"Auth with {name}")
-    result = _login(auth)
-    click.echo(result)
-
-
-@login.command()
-@click.option("--name", prompt="Your login ID")
-@click.option("--password", prompt=True, hide_input=True)
-@click.option("--line", prompt=True, default="")
-def custom(name, password, line):
-    auth = {"user": name.strip(), "pass": password.strip()}
-    if len(line) > 0:
-        auth["line"] = line.strip()
-    click.echo(f"login with {name}")
     result = _login(auth)
     click.echo(result)
 
