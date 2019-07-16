@@ -22,10 +22,10 @@ def main():
     pass
 
 
-def load_data():
-    with open("bupt_login.json", "r") as fp:
-        data = json.load(fp)
-    return data
+@main.command("list")
+def list_names():
+    for name in data.keys():
+        click.echo(name)
 
 
 @main.command()
@@ -35,17 +35,21 @@ def logout():
 
 
 @main.command()
-def login():
-    data = load_data()
-    name, auth = next(iter(data.items()))
-    click.echo(f"Auth with {name}")
-    result = _login(auth)
-    click.echo(result)
+@click.argument("name", default="")
+def login(name):
+    # data = load_data()
+    if len(name) == 0:
+        name = next(iter(data.keys()))
+    if name in data:
+        click.echo(f"Auth with {name}")
+        result = _login(data[name])
+        click.echo(result)
+    else:
+        click.echo("no such config")
 
 
 @main.command()
 def gui():
-    data = load_data()
     layout = [
         [sg.Text("Please Select the auth info")],
         [sg.InputCombo(tuple(data.keys()), size=(20, 1))],
@@ -68,4 +72,6 @@ def gui():
 
 
 if __name__ == "__main__":
+    with open("bupt_login.json", "r") as fp:
+        data = json.load(fp)
     main()
