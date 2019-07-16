@@ -9,6 +9,7 @@ python = "^3.7"
 beautifulsoup4 = "^4.7"
 requests = "^2.22"
 pysimplegui = "^3.39"
+lxml = "^4.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"

@@ -7,7 +7,7 @@ import PySimpleGUI as sg
 def login(auth):
     login_url = "http://ngw.bupt.edu.cn/login"
     res = requests.post(login_url, auth)
-    soup = BeautifulSoup(res.text, "html.parser")
+    soup = BeautifulSoup(res.text, "lxml")
     try:
         result = soup.find("h3").text
     except AttributeError:
