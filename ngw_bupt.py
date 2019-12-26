@@ -11,7 +11,7 @@ gw = "10.3.8.211"
 def _login(auth):
     login_url = f"http://{gw}/login"
     res = requests.post(login_url, auth)
-    soup = BeautifulSoup(res.text, "lxml")
+    soup = BeautifulSoup(res.text, "html.parser")
     try:
         result = soup.find("h3").text
     except AttributeError:
