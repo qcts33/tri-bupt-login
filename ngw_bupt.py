@@ -1,13 +1,15 @@
 import json
 
+import click
 import PySimpleGUI as sg
 import requests
 from bs4 import BeautifulSoup
-import click
+
+gw = "10.3.8.211"
 
 
 def _login(auth):
-    login_url = "http://ngw.bupt.edu.cn/login"
+    login_url = f"http://{gw}/login"
     res = requests.post(login_url, auth)
     soup = BeautifulSoup(res.text, "lxml")
     try:
@@ -30,7 +32,7 @@ def list_names():
 
 @main.command()
 def logout():
-    requests.get("http://ngw.bupt.edu.cn/logout")
+    requests.get(f"http://{gw}/logout")
     click.echo("logout")
 
 
@@ -67,7 +69,7 @@ def gui():
             result = _login(auth)
             window.Element("_Output_").Update(result)
         if event == "Logout":
-            requests.get("http://ngw.bupt.edu.cn/logout")
+            requests.get(f"http://{gw}/logout")
             window.Element("_Output_").Update("已登出")
 
 
