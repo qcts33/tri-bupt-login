@@ -9,12 +9,11 @@ python = "^3.7"
 beautifulsoup4 = "^4.7"
 requests = "^2.22"
 pysimplegui = "^3.39"
-lxml = "^4.3"
 click = "^7.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
-black = {version = "^18.3-alpha.0",allows-prereleases = true}
+black = {version = "^18.3-alpha.0",allow-prereleases = true}
 
 [build-system]
 requires = ["poetry>=0.12"]
